@@ -21,7 +21,8 @@ TODO(jungukcho)
 */
 
 var (
-	errUnknownPortType               = errors.New("unknown port Type")
+	errUnknownPortType = errors.New("unknown port Type")
+	// ErrUnsupportedTranslationFeature is returned when translation feature is not supported.
 	ErrUnsupportedTranslationFeature = errors.New("unsupported Windows translation feature")
 )
 

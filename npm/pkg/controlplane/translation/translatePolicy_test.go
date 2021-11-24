@@ -1277,7 +1277,8 @@ func TestPeerAndPortRule(t *testing.T) {
 				Name:      tt.npmNetPol.Name,
 				NameSpace: tt.npmNetPol.NameSpace,
 			}
-			peerAndPortRule(npmNetPol, policies.Ingress, tt.ports, setInfo)
+			err := peerAndPortRule(npmNetPol, policies.Ingress, tt.ports, setInfo)
+			require.NoError(t, err)
 			require.Equal(t, tt.npmNetPol, npmNetPol)
 		})
 	}
