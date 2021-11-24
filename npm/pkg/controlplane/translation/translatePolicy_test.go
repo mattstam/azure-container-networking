@@ -699,11 +699,13 @@ func TestPodSelector(t *testing.T) {
 			t.Parallel()
 			var podSelectorIPSets []*ipsets.TranslatedIPSet
 			var podSelectorList []policies.SetInfo
+			var err error
 			if tt.namespace == "" {
-				podSelectorIPSets, podSelectorList = podSelector(tt.matchType, tt.labelSelector)
+				podSelectorIPSets, podSelectorList, err = podSelector(tt.matchType, tt.labelSelector)
 			} else {
-				podSelectorIPSets, podSelectorList = podSelectorWithNS(tt.namespace, tt.matchType, tt.labelSelector)
+				podSelectorIPSets, podSelectorList, err = podSelectorWithNS(tt.namespace, tt.matchType, tt.labelSelector)
 			}
+			require.NoError(t, err)
 			require.Equal(t, tt.podSelectorIPSets, podSelectorIPSets)
 			require.Equal(t, tt.podSelectorList, podSelectorList)
 		})
@@ -1486,8 +1488,11 @@ func TestIngressPolicy(t *testing.T) {
 				Name:      tt.npmNetPol.Name,
 				NameSpace: tt.npmNetPol.NameSpace,
 			}
-			npmNetPol.PodSelectorIPSets, npmNetPol.PodSelectorList = podSelectorWithNS(npmNetPol.NameSpace, policies.EitherMatch, tt.targetSelector)
-			ingressPolicy(npmNetPol, tt.rules)
+			var err error
+			npmNetPol.PodSelectorIPSets, npmNetPol.PodSelectorList, err = podSelectorWithNS(npmNetPol.NameSpace, policies.EitherMatch, tt.targetSelector)
+			require.NoError(t, err)
+			err = ingressPolicy(npmNetPol, tt.rules)
+			require.NoError(t, err)
 			require.Equal(t, tt.npmNetPol, npmNetPol)
 		})
 	}
