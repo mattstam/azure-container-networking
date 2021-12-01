@@ -137,7 +137,7 @@ jobs:
     demands: 
     - agent.os -equals Linux
     - Role -equals Build
-  dependsOn: [Create_cluster, Build_test, setup]
+  dependsOn: [Create_RG, Build_test, setup]
   variables:
     RESOURCE_GROUP: $[ dependencies.setup.outputs['EnvironmentalVariables.RESOURCE_GROUP'] ]
     TAG: $[ dependencies.setup.outputs['EnvironmentalVariables.TAG'] ]
