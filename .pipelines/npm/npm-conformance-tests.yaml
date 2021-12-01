@@ -127,7 +127,7 @@ jobs:
         AZURE_CLUSTER: 'v1-default-cluster'
         PROFILE: 'v1-default.yaml'
       v1-place-azure-chain-first:
-        AZURE_CLUSTER: 'v1-place-azure-chain-first-cluster'
+        AZURE_CLUSTER: 'v1-place-first-cluster'
         PROFILE: 'v1-place-azure-chain-first.yaml'
       v2-default:
         AZURE_CLUSTER: 'v2-default-cluster'
