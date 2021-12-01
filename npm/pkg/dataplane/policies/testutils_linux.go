@@ -41,6 +41,12 @@ func GetRemovePolicyTestCalls(policy *NPMNetworkPolicy) []testutils.TestCmd {
 	return calls
 }
 
+func GetRemovePolicyWithRebootTestCalls(policy *NPMNetworkPolicy) []testutils.TestCmd {
+	calls := GetRemovePolicyTestCalls(policy)
+	// TODO add reboot test calls
+	return calls
+}
+
 // GetRemovePolicyFailureTestCalls fails on the restore
 func GetRemovePolicyFailureTestCalls(policy *NPMNetworkPolicy) []testutils.TestCmd {
 	calls := GetRemovePolicyTestCalls(policy)

@@ -10,9 +10,14 @@ import (
 	"github.com/Azure/azure-container-networking/npm/pkg/dataplane/policies"
 )
 
-const MaxSleepTime = 15
+const (
+	MaxSleepTime = 1
+	includeLists = false
+)
 
 var (
+	policyManagerCfg = policies.IPSetAndRebootConfig
+
 	nodeName   = "testNode"
 	testNetPol = &policies.NPMNetworkPolicy{
 		Name: "test/test-netpol",
@@ -60,7 +65,7 @@ var (
 )
 
 func main() {
-	dp, err := dataplane.NewDataPlane(nodeName, common.NewIOShim())
+	dp, err := dataplane.NewDataPlane(nodeName, common.NewIOShim(), policyManagerCfg)
 	panicOnError(err)
 	printAndWait(true)
 
@@ -86,15 +91,15 @@ func main() {
 	panicOnError(dp.AddToSets([]*ipsets.IPSetMetadata{ipsets.TestKeyPodSet.Metadata, ipsets.TestNSSet.Metadata}, podMetadataC))
 	dp.CreateIPSets([]*ipsets.IPSetMetadata{ipsets.TestKVPodSet.Metadata, ipsets.TestNamedportSet.Metadata, ipsets.TestCIDRSet.Metadata})
 
-	// can't do lists on my computer
-
 	panicOnError(dp.ApplyDataPlane())
 
 	printAndWait(true)
 
-	panicOnError(dp.AddToLists([]*ipsets.IPSetMetadata{ipsets.TestKeyNSList.Metadata, ipsets.TestKVNSList.Metadata}, []*ipsets.IPSetMetadata{ipsets.TestNSSet.Metadata}))
+	if includeLists {
+		panicOnError(dp.AddToLists([]*ipsets.IPSetMetadata{ipsets.TestKeyNSList.Metadata, ipsets.TestKVNSList.Metadata}, []*ipsets.IPSetMetadata{ipsets.TestNSSet.Metadata}))
 
-	panicOnError(dp.AddToLists([]*ipsets.IPSetMetadata{ipsets.TestNestedLabelList.Metadata}, []*ipsets.IPSetMetadata{ipsets.TestKVPodSet.Metadata, ipsets.TestKeyPodSet.Metadata}))
+		panicOnError(dp.AddToLists([]*ipsets.IPSetMetadata{ipsets.TestNestedLabelList.Metadata}, []*ipsets.IPSetMetadata{ipsets.TestKVPodSet.Metadata, ipsets.TestKeyPodSet.Metadata}))
+	}
 
 	// remove members from some sets and delete some sets
 	panicOnError(dp.RemoveFromSets([]*ipsets.IPSetMetadata{ipsets.TestNSSet.Metadata}, podMetadataB))
@@ -117,7 +122,7 @@ func main() {
 	panicOnError(dp.AddPolicy(testNetPol))
 	printAndWait(true)
 
-	panicOnError(dp.RemovePolicy(testNetPol.Name))
+	panicOnError(dp.RemovePolicy(testNetPol.PolicyKey))
 	printAndWait(true)
 
 	panicOnError(dp.AddPolicy(testNetPol))
@@ -132,41 +137,19 @@ func main() {
 	panicOnError(dp.ApplyDataPlane())
 	printAndWait(true)
 
-	panicOnError(dp.RemovePolicy(testNetPol.Name))
+	panicOnError(dp.RemovePolicy(testNetPol.PolicyKey))
 	panicOnError(dp.AddPolicy(policies.TestNetworkPolicies[0]))
 	panicOnError(dp.AddPolicy(policies.TestNetworkPolicies[1]))
 	printAndWait(true)
 
-	panicOnError(dp.RemovePolicy(policies.TestNetworkPolicies[2].Name)) // no-op
+	panicOnError(dp.RemovePolicy(policies.TestNetworkPolicies[2].PolicyKey)) // no-op
 	panicOnError(dp.AddPolicy(policies.TestNetworkPolicies[2]))
 	printAndWait(true)
 
-	panicOnError(dp.RemovePolicy(policies.TestNetworkPolicies[1].Name))
-
-	testPolicyManager()
-}
-
-func testPolicyManager() {
-	pMgr := policies.NewPolicyManager(common.NewIOShim())
-
-	panicOnError(pMgr.Reset())
-	printAndWait(false)
-
-	panicOnError(pMgr.Initialize())
-	printAndWait(false)
-
-	panicOnError(pMgr.AddPolicy(policies.TestNetworkPolicies[0], nil))
-	printAndWait(false)
-
-	panicOnError(pMgr.AddPolicy(policies.TestNetworkPolicies[1], nil))
-	printAndWait(false)
-
-	// remove something that doesn't exist
-	panicOnError(pMgr.RemovePolicy(policies.TestNetworkPolicies[2].Name, nil))
-	printAndWait(false)
-
-	panicOnError(pMgr.AddPolicy(policies.TestNetworkPolicies[2], nil))
-	printAndWait(false)
+	// remove all policies. For linux, iptables should reboot if the policy manager config specifies so
+	panicOnError(dp.RemovePolicy(policies.TestNetworkPolicies[0].PolicyKey))
+	panicOnError(dp.RemovePolicy(policies.TestNetworkPolicies[1].PolicyKey))
+	panicOnError(dp.RemovePolicy(policies.TestNetworkPolicies[2].PolicyKey))
 }
 
 func panicOnError(err error) {

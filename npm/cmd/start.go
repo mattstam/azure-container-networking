@@ -16,6 +16,7 @@ import (
 	restserver "github.com/Azure/azure-container-networking/npm/http/server"
 	"github.com/Azure/azure-container-networking/npm/metrics"
 	"github.com/Azure/azure-container-networking/npm/pkg/dataplane"
+	"github.com/Azure/azure-container-networking/npm/pkg/dataplane/policies"
 	"github.com/Azure/azure-container-networking/npm/util"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -110,7 +111,7 @@ func start(config npmconfig.Config) error {
 
 	var dp dataplane.GenericDataplane
 	if config.Toggles.EnableV2NPM {
-		dp, err = dataplane.NewDataPlane(npm.GetNodeName(), common.NewIOShim())
+		dp, err = dataplane.NewDataPlane(npm.GetNodeName(), common.NewIOShim(), policies.IPSetAndNoRebootConfig)
 		if err != nil {
 			return fmt.Errorf("failed to create dataplane with error %w", err)
 		}

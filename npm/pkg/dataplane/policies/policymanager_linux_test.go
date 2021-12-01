@@ -45,7 +45,7 @@ func TestAddPolicies(t *testing.T) {
 	calls := []testutils.TestCmd{fakeIPTablesRestoreCommand}
 	ioshim := common.NewMockIOShim(calls)
 	defer ioshim.VerifyCalls(t, calls)
-	pMgr := NewPolicyManager(ioshim)
+	pMgr := NewPolicyManager(ioshim, IPSetAndNoRebootConfig)
 	creator := pMgr.creatorForNewNetworkPolicies(allChainNames(TestNetworkPolicies), TestNetworkPolicies...)
 	actualLines := strings.Split(creator.ToString(), "\n")
 	expectedLines := []string{
@@ -81,7 +81,7 @@ func TestAddPoliciesError(t *testing.T) {
 	calls := []testutils.TestCmd{fakeIPTablesRestoreFailureCommand}
 	ioshim := common.NewMockIOShim(calls)
 	defer ioshim.VerifyCalls(t, calls)
-	pMgr := NewPolicyManager(ioshim)
+	pMgr := NewPolicyManager(ioshim, IPSetAndNoRebootConfig)
 	err := pMgr.addPolicy(TestNetworkPolicies[0], nil)
 	require.Error(t, err)
 }
@@ -95,7 +95,7 @@ func TestRemovePolicies(t *testing.T) {
 	}
 	ioshim := common.NewMockIOShim(calls)
 	defer ioshim.VerifyCalls(t, calls)
-	pMgr := NewPolicyManager(ioshim)
+	pMgr := NewPolicyManager(ioshim, IPSetAndNoRebootConfig)
 	creator := pMgr.creatorForRemovingPolicies(allChainNames(TestNetworkPolicies))
 	actualLines := strings.Split(creator.ToString(), "\n")
 	expectedLines := []string{
@@ -124,7 +124,7 @@ func TestRemovePoliciesErrorOnRestore(t *testing.T) {
 	}
 	ioshim := common.NewMockIOShim(calls)
 	defer ioshim.VerifyCalls(t, calls)
-	pMgr := NewPolicyManager(ioshim)
+	pMgr := NewPolicyManager(ioshim, IPSetAndNoRebootConfig)
 	err := pMgr.AddPolicy(TestNetworkPolicies[0], nil)
 	require.NoError(t, err)
 	err = pMgr.RemovePolicy(TestNetworkPolicies[0].PolicyKey, nil)
@@ -138,7 +138,7 @@ func TestRemovePoliciesErrorOnDeleteForIngress(t *testing.T) {
 	}
 	ioshim := common.NewMockIOShim(calls)
 	defer ioshim.VerifyCalls(t, calls)
-	pMgr := NewPolicyManager(ioshim)
+	pMgr := NewPolicyManager(ioshim, IPSetAndNoRebootConfig)
 	err := pMgr.AddPolicy(TestNetworkPolicies[0], nil)
 	require.NoError(t, err)
 	err = pMgr.RemovePolicy(TestNetworkPolicies[0].PolicyKey, nil)
@@ -153,7 +153,7 @@ func TestRemovePoliciesErrorOnDeleteForEgress(t *testing.T) {
 	}
 	ioshim := common.NewMockIOShim(calls)
 	defer ioshim.VerifyCalls(t, calls)
-	pMgr := NewPolicyManager(ioshim)
+	pMgr := NewPolicyManager(ioshim, IPSetAndNoRebootConfig)
 	err := pMgr.AddPolicy(TestNetworkPolicies[0], nil)
 	require.NoError(t, err)
 	err = pMgr.RemovePolicy(TestNetworkPolicies[0].PolicyKey, nil)
@@ -171,7 +171,7 @@ func TestUpdatingChainsToCleanup(t *testing.T) {
 	calls = append(calls, GetAddPolicyTestCalls(TestNetworkPolicies[0])...)
 	ioshim := common.NewMockIOShim(calls)
 	defer ioshim.VerifyCalls(t, calls)
-	pMgr := NewPolicyManager(ioshim)
+	pMgr := NewPolicyManager(ioshim, IPSetAndNoRebootConfig)
 
 	// add so we can remove. no stale chains to start
 	require.NoError(t, pMgr.AddPolicy(TestNetworkPolicies[0], nil))

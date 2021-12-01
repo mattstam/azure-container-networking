@@ -54,10 +54,10 @@ type NPMEndpoint struct {
 	NetPolReference map[string]struct{}
 }
 
-func NewDataPlane(nodeName string, ioShim *common.IOShim) (*DataPlane, error) {
+func NewDataPlane(nodeName string, ioShim *common.IOShim, policyManagerCfg *policies.PolicyManagerCfg) (*DataPlane, error) {
 	metrics.InitializeAll()
 	dp := &DataPlane{
-		policyMgr:      policies.NewPolicyManager(ioShim),
+		policyMgr:      policies.NewPolicyManager(ioShim, policyManagerCfg),
 		ipsetMgr:       ipsets.NewIPSetManager(iMgrDefaultCfg, ioShim),
 		endpointCache:  make(map[string]*NPMEndpoint),
 		nodeName:       nodeName,

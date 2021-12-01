@@ -23,6 +23,22 @@ const (
 	reconcileTimeInMinutes = 5
 )
 
+type PolicyManagerCfg struct {
+	Mode               PolicyManagerMode
+	RebootOnNoPolicies bool
+}
+
+var (
+	IPSetAndRebootConfig = &PolicyManagerCfg{
+		Mode:               IPSetPolicyMode,
+		RebootOnNoPolicies: true,
+	}
+	IPSetAndNoRebootConfig = &PolicyManagerCfg{
+		Mode:               IPSetPolicyMode,
+		RebootOnNoPolicies: false,
+	}
+)
+
 type PolicyMap struct {
 	cache map[string]*NPMNetworkPolicy
 }
@@ -35,13 +51,14 @@ type PolicyManager struct {
 	sync.Mutex
 }
 
-func NewPolicyManager(ioShim *common.IOShim) *PolicyManager {
+func NewPolicyManager(ioShim *common.IOShim, cfg *PolicyManagerCfg) *PolicyManager {
 	return &PolicyManager{
 		policyMap: &PolicyMap{
 			cache: make(map[string]*NPMNetworkPolicy),
 		},
-		ioShim:      ioShim,
-		staleChains: newStaleChains(),
+		ioShim:           ioShim,
+		staleChains:      newStaleChains(),
+		PolicyManagerCfg: cfg,
 	}
 }
 
@@ -50,10 +67,6 @@ func (pMgr *PolicyManager) Initialize() error {
 		return npmerrors.ErrorWrapper(npmerrors.InitializePolicyMgr, false, "failed to initialize policy manager", err)
 	}
 	return nil
-}
-
-type PolicyManagerCfg struct {
-	Mode PolicyManagerMode
 }
 
 func (pMgr *PolicyManager) Reset() error {
@@ -135,7 +148,7 @@ func (pMgr *PolicyManager) RemovePolicy(policyKey string, endpointList map[strin
 	}
 
 	delete(pMgr.policyMap.cache, policyKey)
-	if len(pMgr.policyMap.cache) == 0 {
+	if pMgr.RebootOnNoPolicies && len(pMgr.policyMap.cache) == 0 {
 		klog.Infof("rebooting policy manager since there are no policies remaining in the cache")
 		if err := pMgr.reboot(); err != nil {
 			klog.Errorf("failed to reboot when there were no policies remaining")

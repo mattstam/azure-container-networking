@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	maxRetryCount           = 1
+	maxTryCount             = 1
 	unknownLineErrorPattern = "line (\\d+) failed" // TODO this could happen if syntax is off or AZURE-NPM-INGRESS doesn't exist for -A AZURE-NPM-INGRESS -j hash(NP1) ...
 	knownLineErrorPattern   = "Error occurred at line: (\\d+)"
 
@@ -82,7 +82,7 @@ func allChainNames(networkPolicies []*NPMNetworkPolicy) []string {
 }
 
 func (pMgr *PolicyManager) newCreatorWithChains(chainNames []string) *ioutil.FileCreator {
-	creator := ioutil.NewFileCreator(pMgr.ioShim, maxRetryCount, knownLineErrorPattern, unknownLineErrorPattern) // TODO pass an array instead of this ... thing
+	creator := ioutil.NewFileCreator(pMgr.ioShim, maxTryCount, knownLineErrorPattern, unknownLineErrorPattern) // TODO pass an array instead of this ... thing
 
 	creator.AddLine("", nil, "*"+util.IptablesFilterTable) // specify the table
 	for _, chainName := range chainNames {
@@ -224,7 +224,6 @@ func dstPortSpecs(portRange Ports) []string {
 }
 
 func matchSetSpecsForNetworkPolicy(networkPolicy *NPMNetworkPolicy, matchType MatchType) []string {
-	// TODO update to use included boolean/new data structure from Junguk's PR
 	specs := make([]string, 0, maxLengthForMatchSetSpecs*len(networkPolicy.PodSelectorList))
 	matchString := matchType.toIPTablesString()
 	for _, setInfo := range networkPolicy.PodSelectorList {
