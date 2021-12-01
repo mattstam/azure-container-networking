@@ -604,7 +604,7 @@ func (c *PodController) cleanUpDeletedPod(cachedNpmPodKey string) error {
 // manageNamedPortIpsets helps with adding or deleting Pod namedPort IPsets.
 func (c *PodController) manageNamedPortIpsets(portList []corev1.ContainerPort, podKey,
 	podIP, nodeName string, namedPortOperation NamedPortOperation) error {
-	if runtime.GOOS == "windows" {
+	if util.IsWindowsDP() {
 		klog.Warningf("Windows Dataplane does not support NamedPort operations. Operation: %s portList is %+v", namedPortOperation, portList)
 		return nil
 	}

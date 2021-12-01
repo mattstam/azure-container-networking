@@ -3,7 +3,6 @@ package translation
 import (
 	"errors"
 	"fmt"
-	"runtime"
 
 	"github.com/Azure/azure-container-networking/npm/pkg/dataplane/ipsets"
 	"github.com/Azure/azure-container-networking/npm/pkg/dataplane/policies"
@@ -22,8 +21,10 @@ TODO(jungukcho)
 
 var (
 	errUnknownPortType = errors.New("unknown port Type")
-	// ErrUnsupportedTranslationFeature is returned when translation feature is not supported.
-	ErrUnsupportedTranslationFeature = errors.New("unsupported Windows translation feature")
+	// ErrUnsupportedNamedPort is returned when named port translation feature is used in windows.
+	ErrUnsupportedNamedPort = errors.New("unsupported namedport translation features used on windows")
+	// ErrUnsupportedNegativeMatch is returned when negative match translation feature is used in windows.
+	ErrUnsupportedNegativeMatch = errors.New("unsupported NotExist operator translation features used on windows")
 )
 
 type netpolPortType string
@@ -40,9 +41,9 @@ func portType(portRule networkingv1.NetworkPolicyPort) (netpolPortType, error) {
 	if portRule.Port == nil || portRule.Port.IntValue() != 0 {
 		return numericPortType, nil
 	} else if portRule.Port.IntValue() == 0 && portRule.Port.String() != "" {
-		if isWindows() {
+		if util.IsWindowsDP() {
 			klog.Warningf("Windows does not support named port. Use numeric port instead.")
-			return "", ErrUnsupportedTranslationFeature
+			return "", ErrUnsupportedNamedPort
 		}
 		return namedPortType, nil
 	}
@@ -484,8 +485,7 @@ func ingressPolicy(npmNetPol *policies.NPMNetworkPolicy, ingress []networkingv1.
 	// #3. Ingress rule is not AllowAll (including internal and external) and DenyAll policy.
 	// So, start translating ingress policy.
 	for i, rule := range ingress {
-		err := translateRule(npmNetPol, policies.Ingress, policies.SrcMatch, i, rule.Ports, rule.From)
-		if err != nil {
+		if err := translateRule(npmNetPol, policies.Ingress, policies.SrcMatch, i, rule.Ports, rule.From); err != nil {
 			return err
 		}
 	}
@@ -571,16 +571,4 @@ func TranslatePolicy(npObj *networkingv1.NetworkPolicy) (*policies.NPMNetworkPol
 	}
 
 	return npmNetPol, nil
-}
-
-func invalidWindowsOperatorLimitation(op metav1.LabelSelectorOperator) bool {
-	if isWindows() &&
-		(op == metav1.LabelSelectorOpNotIn || op == metav1.LabelSelectorOpDoesNotExist) {
-		return true
-	}
-	return false
-}
-
-func isWindows() bool {
-	return runtime.GOOS == "windows"
 }

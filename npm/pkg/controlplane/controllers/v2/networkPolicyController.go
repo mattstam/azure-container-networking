@@ -260,7 +260,7 @@ func (c *NetworkPolicyController) syncAddAndUpdateNetPol(netPolObj *networkingv1
 	// install translated rules into kernel
 	npmNetPolObj, err := translation.TranslatePolicy(netPolObj)
 	if err != nil {
-		if errors.Is(err, translation.ErrUnsupportedTranslationFeature) {
+		if errors.Is(err, translation.ErrUnsupportedNamedPort) || errors.Is(err, translation.ErrUnsupportedNegativeMatch) {
 			// We can safely suppress unsupported network policy because re-Queuing will result in same error
 			klog.Warningf("NetworkPolicy %s in namespace %s is not translated because it has unsupported translated features of Windows.", netPolObj.ObjectMeta.Name, netPolObj.ObjectMeta.Namespace)
 			return nil

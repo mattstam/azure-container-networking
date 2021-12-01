@@ -246,8 +246,8 @@ func parsePodSelector(selector *metav1.LabelSelector) ([]labelSelector, error) {
 		var setType ipsets.SetType
 		var members []string
 		op := req.Operator
-		if invalidWindowsOperatorLimitation(op) {
-			return nil, ErrUnsupportedTranslationFeature
+		if unsupportedOpsInWindows(op) {
+			return nil, ErrUnsupportedNegativeMatch
 		}
 		switch op {
 		case metav1.LabelSelectorOpIn, metav1.LabelSelectorOpNotIn:
@@ -275,4 +275,9 @@ func parsePodSelector(selector *metav1.LabelSelector) ([]labelSelector, error) {
 	}
 
 	return parsedSelectors.labelSelectors, nil
+}
+
+func unsupportedOpsInWindows(op metav1.LabelSelectorOperator) bool {
+	return util.IsWindowsDP() &&
+		(op == metav1.LabelSelectorOpNotIn || op == metav1.LabelSelectorOpDoesNotExist)
 }
