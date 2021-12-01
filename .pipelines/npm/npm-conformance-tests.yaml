@@ -208,7 +208,7 @@ jobs:
     - agent.os -equals Linux
     - Role -equals Build
   condition: always()
-  dependsOn: [Run_test, setup]
+  dependsOn: [Create_Cluster_and_Run_Test, setup]
   variables:
     RESOURCE_GROUP: $[ dependencies.setup.outputs['EnvironmentalVariables.RESOURCE_GROUP'] ]
     TAG: $[ dependencies.setup.outputs['EnvironmentalVariables.TAG'] ]
