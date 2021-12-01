@@ -1,5 +1,5 @@
 trigger:
-- v2-conformance
+- master
 
 variables:
 - name: VNET_NAME
