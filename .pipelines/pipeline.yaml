@@ -240,6 +240,16 @@ stages:
       clusterDefinitionCniBuildOS: "windows"
       clusterDefinitionCniBuildExt: ".zip"
 
+  - template: singletenancy/aks-engine/e2e-dualstack-tests.yaml
+    parameters:
+      name: "ubuntu_18_04_linux_e2e"
+      displayName: "Ubuntu 18.04 Dualstack"
+      pipelineBuildImage: "$(BUILD_IMAGE)"
+      clusterDefinition: "cniLinuxDualstack1804.json"
+      clusterDefinitionCniTypeKey: "azureCNIURLLinux"
+      clusterDefinitionCniBuildOS: "linux"
+      clusterDefinitionCniBuildExt: ".tgz"
+
   - stage: cleanup
     displayName: Cleanup
     dependsOn:
