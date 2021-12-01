@@ -1,5 +1,3 @@
--include setup
-
 # Default platform commands
 SHELL=/bin/bash
 MKDIR := mkdir -p
@@ -439,5 +437,8 @@ $(MOCKGEN): $(TOOLS_DIR)/go.mod
 	cd $(TOOLS_DIR); go mod download; go build -tags=tools -o bin/mockgen github.com/golang/mock/mockgen
 
 mockgen: $(MOCKGEN) ## Build mockgen
+
+clean-tools: 
+	rm -r build/tools/bin
 
 tools: gocov gocov-xml go-junit-report golangci-lint gofmt ## Build bins for build tools

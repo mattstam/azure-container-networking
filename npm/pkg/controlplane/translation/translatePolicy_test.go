@@ -192,7 +192,7 @@ func TestNamedPortRuleInfo(t *testing.T) {
 			},
 
 			want: &namedPortOutput{
-				translatedIPSet: ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+				translatedIPSet: ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 				protocol:        "TCP",
 			},
 		},
@@ -202,7 +202,7 @@ func TestNamedPortRuleInfo(t *testing.T) {
 				Port: &namedPort,
 			},
 			want: &namedPortOutput{
-				translatedIPSet: ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+				translatedIPSet: ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 				protocol:        "TCP",
 			},
 		},
@@ -253,8 +253,8 @@ func TestNamedPortRule(t *testing.T) {
 				Port:     &namedPort,
 			},
 			want: &namedPortRuleOutput{
-				translatedIPSet: ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
-				setInfo:         policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
+				translatedIPSet: ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
+				setInfo:         policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
 				protocol:        "TCP",
 			},
 		},
@@ -264,8 +264,8 @@ func TestNamedPortRule(t *testing.T) {
 				Port: &namedPort,
 			},
 			want: &namedPortRuleOutput{
-				translatedIPSet: ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
-				setInfo:         policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
+				translatedIPSet: ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
+				setInfo:         policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
 				protocol:        "TCP",
 			},
 		},
@@ -972,11 +972,11 @@ func TestPortRuleWithNamedPort(t *testing.T) {
 				Port:     &namedPort,
 			},
 			ruleIPSets: []*ipsets.TranslatedIPSet{
-				ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+				ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 			},
 			acl: &policies.ACLPolicy{
 				DstList: []policies.SetInfo{
-					policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, matchType),
+					policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, matchType),
 				},
 				Protocol: "TCP",
 			},
@@ -987,11 +987,11 @@ func TestPortRuleWithNamedPort(t *testing.T) {
 				Port: &namedPort,
 			},
 			ruleIPSets: []*ipsets.TranslatedIPSet{
-				ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+				ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 			},
 			acl: &policies.ACLPolicy{
 				DstList: []policies.SetInfo{
-					policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, matchType),
+					policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, matchType),
 				},
 				Protocol: "TCP",
 			},
@@ -1161,7 +1161,7 @@ func TestPeerAndPortRule(t *testing.T) {
 				Name:      namedPortStr,
 				NameSpace: "default",
 				RuleIPSets: []*ipsets.TranslatedIPSet{
-					ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+					ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 				},
 				ACLs: []*policies.ACLPolicy{
 					{
@@ -1170,7 +1170,7 @@ func TestPeerAndPortRule(t *testing.T) {
 						Direction: policies.Ingress,
 						SrcList:   []policies.SetInfo{},
 						DstList: []policies.SetInfo{
-							policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
+							policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
 						},
 						Protocol: "TCP",
 					},
@@ -1189,7 +1189,7 @@ func TestPeerAndPortRule(t *testing.T) {
 				Name:      namedPortStr,
 				NameSpace: "default",
 				RuleIPSets: []*ipsets.TranslatedIPSet{
-					ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+					ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 				},
 				ACLs: []*policies.ACLPolicy{
 					{
@@ -1200,7 +1200,7 @@ func TestPeerAndPortRule(t *testing.T) {
 							policies.NewSetInfo("test-in-ns-default-0IN", ipsets.CIDRBlocks, included, matchType),
 						},
 						DstList: []policies.SetInfo{
-							policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
+							policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
 						},
 						Protocol: "TCP",
 					},
@@ -1219,7 +1219,7 @@ func TestPeerAndPortRule(t *testing.T) {
 				Name:      namedPortStr,
 				NameSpace: "default",
 				RuleIPSets: []*ipsets.TranslatedIPSet{
-					ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+					ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 				},
 				ACLs: []*policies.ACLPolicy{
 					{
@@ -1228,7 +1228,7 @@ func TestPeerAndPortRule(t *testing.T) {
 						Direction: policies.Ingress,
 						SrcList:   []policies.SetInfo{},
 						DstList: []policies.SetInfo{
-							policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
+							policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
 						},
 						Protocol: "TCP",
 					},
@@ -1247,7 +1247,7 @@ func TestPeerAndPortRule(t *testing.T) {
 				Name:      namedPortStr,
 				NameSpace: "default",
 				RuleIPSets: []*ipsets.TranslatedIPSet{
-					ipsets.NewTranslatedIPSet(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts),
+					ipsets.NewTranslatedIPSet("serve-tcp", ipsets.NamedPorts),
 				},
 				ACLs: []*policies.ACLPolicy{
 					{
@@ -1256,7 +1256,7 @@ func TestPeerAndPortRule(t *testing.T) {
 						Direction: policies.Ingress,
 						SrcList:   []policies.SetInfo{},
 						DstList: []policies.SetInfo{
-							policies.NewSetInfo(util.NamedPortIPSetPrefix+"serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
+							policies.NewSetInfo("serve-tcp", ipsets.NamedPorts, included, policies.DstDstMatch),
 						},
 						Protocol: "TCP",
 					},
