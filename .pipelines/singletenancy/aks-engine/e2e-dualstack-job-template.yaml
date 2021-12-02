@@ -84,7 +84,11 @@ stages:
               scriptLocation: "inlineScript"
               addSpnToEnvironment: true
               inlineScript: |
-                ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $(RESOURCE_GROUP) -s $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
+                RG=kubernetes-$(echo "dualstack-e2e-`date "+%Y-%m-%d-%S"`")
+                echo "rg:$RG"
+                echo "env rg:$(RESOURCE_GROUP)"
+                echo "running: ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION) -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput"
+                ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
                 mv ./workspace/kubeoutput/kubeconfig/kubeconfig.* ./workspace/kubeoutput/kubeconfig/kubeconfig.json
             name: DeployAKSEngine
             displayName: "Deploy aks-engine cluster"
@@ -125,7 +129,11 @@ stages:
         - download: current
           artifact: kubeoutput
         - bash: |
+            ls -l $(Pipeline.Workspace)
+            ls -l $(Pipeline.Workspace)/Test
+            ls -l $(Pipeline.Workspace)/kubeoutput/kubeconfig
             chmod +x $(Pipeline.Workspace)/Test/e2e.test
+            echo "Run k8s upstream tests"
             $(Pipeline.Workspace)/Test/e2e.test --provider=local --ginkgo.focus=""Feature:IPv6DualStack" --ginkgo.skip="SCTP" --kubeconfig=$(Pipeline.Workspace)/kubeoutput/kubeconfig/kubeconfig.json
           displayName: "Run Test Suite"
         - task: AzureCLI@2
