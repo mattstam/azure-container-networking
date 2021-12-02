@@ -15,7 +15,7 @@ stages:
       - build_and_test
     jobs:
       - job: Create_cluster
-        displayName: Singletenancy AKS Engine Suite - (${{ parameters.name }})
+        displayName: Create Dualstack cluster
         timeoutInMinutes: 120
         pool:
           name: $(BUILD_POOL_NAME_DEFAULT)
@@ -99,8 +99,6 @@ stages:
           demands:
             - agent.os -equals Linux
             - Role -equals Build
-        container:
-            image: mcr.microsoft.com/oss/azcu/go-dev:$(GO_DEV_IMAGE_TAG)
         steps:
           - bash: |
               git clone https://github.com/kubernetes/kubernetes.git
@@ -120,8 +118,6 @@ stages:
           demands:
             - agent.os -equals Linux
             - Role -equals Build
-        container:
-          image: mcr.microsoft.com/oss/azcu/go-dev:$(GO_DEV_IMAGE_TAG)
         steps:
         - checkout: none
         - download: current
