@@ -76,9 +76,18 @@ stages:
               mv ./workspace/aks-engine-*/* ./workspace/
               ls -l ./workspace
               ./workspace/aks-engine version
-              ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $(RESOURCE_GROUP) -s $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
-              mv ./workspace/kubeoutput/kubeconfig/kubeconfig.* ./workspace/kubeoutput/kubeconfig/kubeconfig.json
-            displayName: "create aks-engine cluster"
+            displayName: "Install aks-engine binary"
+
+          - task: AzureCLI@1
+            inputs:
+              azureSubscription: $(AKS_ENGINE_SERVICE_CONNECTION)
+              scriptLocation: "inlineScript"
+              addSpnToEnvironment: true
+              inlineScript: |
+                ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $(RESOURCE_GROUP) -s $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
+                mv ./workspace/kubeoutput/kubeconfig/kubeconfig.* ./workspace/kubeoutput/kubeconfig/kubeconfig.json
+            name: DeployAKSEngine
+            displayName: "Deploy aks-engine cluster"
           - publish: ./workspace/kubeoutput
             artifact: kubeoutput
 
