@@ -68,12 +68,14 @@ stages:
 
               # download binary
               wget https://github.com/Azure/aks-engine/releases/download/$aksEVersion/aks-engine-$aksEVersion-linux-amd64.tar.gz
+              rm -rf ./workspace
               mkdir ./workspace
 
               #extract binary
               tar -zxvf aks-engine-$aksEVersion-linux-amd64.tar.gz -C workspace
               mv ./workspace/aks-engine-*/* ./workspace/
-
+              ls -l ./workspace
+              ./workspace/aks-engine version
               ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $(RESOURCE_GROUP) -s $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
               mv ./workspace/kubeoutput/kubeconfig/kubeconfig.* ./workspace/kubeoutput/kubeconfig/kubeconfig.json
             displayName: "create aks-engine cluster"
