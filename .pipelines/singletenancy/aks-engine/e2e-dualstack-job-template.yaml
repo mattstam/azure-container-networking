@@ -104,7 +104,7 @@ stages:
             artifact: Test
 
       - job: Run_test
-        displayName: Build kubernetes upstream
+        displayName: Run upstream e2e test
         dependsOn: [Create_cluster, Build_kubernetes]
         timeoutInMinutes: 120
         pool:
