@@ -134,7 +134,7 @@ stages:
             ls -l $(Pipeline.Workspace)/kubeoutput/kubeconfig
             chmod +x $(Pipeline.Workspace)/Test/e2e.test
             echo "Run k8s upstream tests"
-            $(Pipeline.Workspace)/Test/e2e.test --provider=local --ginkgo.focus=""Feature:IPv6DualStack" --ginkgo.skip="SCTP" --kubeconfig=$(Pipeline.Workspace)/kubeoutput/kubeconfig/kubeconfig.json
+            $(Pipeline.Workspace)/Test/e2e.test --provider=local --ginkgo.focus="Feature:IPv6DualStack" --ginkgo.skip="SCTP" --kubeconfig=$(Pipeline.Workspace)/kubeoutput/kubeconfig/kubeconfig.json
           displayName: "Run Test Suite"
         - task: AzureCLI@2
           displayName: "Delete Test Cluster Resource Group"
