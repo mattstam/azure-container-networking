@@ -93,11 +93,8 @@ stages:
         container:
             image: mcr.microsoft.com/oss/azcu/go-dev:$(GO_DEV_IMAGE_TAG)
         steps:
-          - script: |
-              git clone https://github.com/kubernetes/kubernetes.git
-            displayName: 'Clone Kubernetes Repo'
-          - checkout: self
           - bash: |
+              git clone https://github.com/kubernetes/kubernetes.git
               cd kubernetes
               export PATH=$PATH:/usr/local/go/bin/
               make WHAT=test/e2e/e2e.test
