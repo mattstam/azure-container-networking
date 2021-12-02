@@ -244,7 +244,7 @@ stages:
 
   - template: singletenancy/aks-engine/e2e-dualstack-job-template.yaml
     parameters:
-      name: "ubuntu_18_04_linux_e2e"
+      name: "ubuntu_18_04_linux_dualstack_e2e"
       displayName: "Ubuntu 18.04 Dualstack"
       pipelineBuildImage: "$(BUILD_IMAGE)"
       clusterDefinition: "cniLinuxDualstack1804.json"
