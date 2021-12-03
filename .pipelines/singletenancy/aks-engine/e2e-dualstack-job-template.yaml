@@ -28,7 +28,6 @@ stages:
           GOPATH: "$(Agent.TempDirectory)/go" # Go workspace path
           GOBIN: "$(GOPATH)/bin" # Go binaries path
           acnPath: "$(GOPATH)/src/github.com/Azure/azure-container-networking"
-          RESOURCE_GROUP: $[ dependencies.setup.outputs['EnvironmentalVariables.RESOURCE_GROUP'] ]
           Tag: $[ stagedependencies.setup.env.outputs['EnvironmentalVariables.Tag'] ]
           CommitHash: $[ stagedependencies.setup.env.outputs['EnvironmentalVariables.CommitHash'] ]
           StorageID: $[ stagedependencies.setup.env.outputs['EnvironmentalVariables.StorageID'] ]
@@ -85,7 +84,7 @@ stages:
               addSpnToEnvironment: true
               inlineScript: |
                 RG=kubernetes-$(echo "dualstack-e2e-`date "+%Y-%m-%d-%S"`")
-                echo "rg:$RG"
+                echo "##vso[task.setvariable variable=RESOURCE_GROUP;isOutput=true;]$RG"
                 echo "env rg:$(RESOURCE_GROUP)"
                 echo "running: ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION) -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput"
                 ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
@@ -122,6 +121,8 @@ stages:
           demands:
             - agent.os -equals Linux
             - Role -equals Build
+        variables:
+          RESOURCE_GROUP: $[ dependencies.Create_cluster.outputs['EnvironmentalVariables.RESOURCE_GROUP'] ]
         steps:
         - checkout: none
         - download: current
@@ -129,15 +130,13 @@ stages:
         - download: current
           artifact: kubeoutput
         - bash: |
-            ls -l $(Pipeline.Workspace)
-            ls -l $(Pipeline.Workspace)/Test
-            ls -l $(Pipeline.Workspace)/kubeoutput/kubeconfig
+            echo "rgname is:$(RESOURCE_GROUP)"
             chmod +x $(Pipeline.Workspace)/Test/e2e.test
-            echo "Run k8s upstream tests"
             $(Pipeline.Workspace)/Test/e2e.test --provider=local --ginkgo.focus="Feature:IPv6DualStack" --ginkgo.skip="SCTP" --kubeconfig=$(Pipeline.Workspace)/kubeoutput/kubeconfig/kubeconfig.json
           displayName: "Run Test Suite"
         - task: AzureCLI@2
           displayName: "Delete Test Cluster Resource Group"
+          condition: always()
           inputs:
             azureSubscription: $(BUILD_VALIDATIONS_SERVICE_CONNECTION)
             scriptType: 'bash'
