@@ -66,12 +66,14 @@ stages:
               echo Using AKS-Engine version $aksEVersion
 
               # download binary
-              wget https://github.com/Azure/aks-engine/releases/download/$aksEVersion/aks-engine-$aksEVersion-linux-amd64.tar.gz
+              #wget https://github.com/Azure/aks-engine/releases/download/$aksEVersion/aks-engine-$aksEVersion-linux-amd64.tar.gz
+              wget https://github.com/tamilmani1989/aks-engine/releases/download/v1.1.0/aks-engine-tamanoha-linux-amd64.tar.gz
               rm -rf ./workspace
               mkdir ./workspace
 
               #extract binary
-              tar -zxvf aks-engine-$aksEVersion-linux-amd64.tar.gz -C workspace
+              #tar -zxvf aks-engine-$aksEVersion-linux-amd64.tar.gz -C workspace
+              tar -zxvf aks-engine-tamanoha-linux-amd64.tar.gz -C workspace
               mv ./workspace/aks-engine-*/* ./workspace/
               ls -l ./workspace
               ./workspace/aks-engine version
@@ -85,7 +87,6 @@ stages:
               inlineScript: |
                 RG=kubernetes-$(echo "dualstack-e2e-`date "+%Y-%m-%d-%S"`")
                 echo "##vso[task.setvariable variable=RESOURCE_GROUP;isOutput=true;]$RG"
-                echo "env rg:$(RESOURCE_GROUP)"
                 echo "running: ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION) -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput"
                 ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
                 mv ./workspace/kubeoutput/kubeconfig/kubeconfig.* ./workspace/kubeoutput/kubeconfig/kubeconfig.json
@@ -122,7 +123,7 @@ stages:
             - agent.os -equals Linux
             - Role -equals Build
         variables:
-          RESOURCE_GROUP: $[ dependencies.Create_cluster.outputs['EnvironmentalVariables.RESOURCE_GROUP'] ]
+          RESOURCE_GROUP: $[ dependencies.Create_cluster.outputs['DeployAKSEngine.RESOURCE_GROUP'] ]
         steps:
         - checkout: none
         - download: current
@@ -142,5 +143,5 @@ stages:
             scriptType: 'bash'
             scriptLocation: 'inlineScript'
             inlineScript: |
-              echo Deleting $(RESOURCE_GROUP)
+              echo "Deleting: $(RESOURCE_GROUP)"
               az group delete -n $(RESOURCE_GROUP) --yes
