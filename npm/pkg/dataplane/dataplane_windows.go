@@ -34,7 +34,7 @@ func (dp *DataPlane) initializeDataPlane() error {
 		dp.setPolicyMode()
 	}
 
-	err := dp.setNetworkIDByName(AzureNetworkName)
+	err := dp.getNetworkInfo()
 	if err != nil {
 		return err
 	}
