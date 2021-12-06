@@ -32,7 +32,7 @@
     },
     "masterProfile": {
       "count": 1,
-      "dnsPrefix": "cnilinuxdual",
+      "dnsPrefix": "",
       "vmSize": "Standard_D2_v2"
     },
     "agentPoolProfiles": [

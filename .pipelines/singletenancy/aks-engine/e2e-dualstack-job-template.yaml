@@ -88,7 +88,7 @@ stages:
                 RG=kubernetes-$(echo "dualstack-e2e-`date "+%Y-%m-%d-%S"`")
                 echo "##vso[task.setvariable variable=RESOURCE_GROUP;isOutput=true;]$RG"
                 echo "running: ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION) -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput"
-                ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput
+                ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $(AKS_ENGINE_REGION)  -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput --auto-suffix
                 mv ./workspace/kubeoutput/kubeconfig/kubeconfig.* ./workspace/kubeoutput/kubeconfig/kubeconfig.json
             name: DeployAKSEngine
             displayName: "Deploy aks-engine cluster"
