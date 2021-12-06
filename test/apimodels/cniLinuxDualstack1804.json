@@ -32,7 +32,7 @@
     },
     "masterProfile": {
       "count": 1,
-      "dnsPrefix": "",
+      "dnsPrefix": "duale2e",
       "vmSize": "Standard_D2_v2"
     },
     "agentPoolProfiles": [
