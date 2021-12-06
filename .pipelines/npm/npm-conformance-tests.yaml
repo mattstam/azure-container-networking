@@ -192,10 +192,12 @@ jobs:
     displayName: "Gather NPM Logs"
     condition: always()
 
-  # FIXME do other jobs in the matrix override this?
   - publish: $(System.DefaultWorkingDirectory)/npmLogs
     condition: always()
     artifact: NpmLogs
+  - publish: $(System.DefaultWorkingDirectory)/kubeconfig
+    condition: always()
+    artifact: kubeconfig
 
 - job: Clean_up
   displayName: "Cleanup"
@@ -204,7 +206,6 @@ jobs:
     demands: 
     - agent.os -equals Linux
     - Role -equals Build
-  condition: always()
   dependsOn: [Create_Cluster_and_Run_Test, setup]
   variables:
     RESOURCE_GROUP: $[ dependencies.setup.outputs['EnvironmentalVariables.RESOURCE_GROUP'] ]
