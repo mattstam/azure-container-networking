@@ -14,9 +14,4 @@ FROM scratch
 COPY --from=build /output/linux_amd64/acncli/ .
 COPY --from=build /output /output
 
-ENV AZURE_CNI_OS=linux
-ENV AZURE_CNI_TENANCY=singletenancy
-ENV AZURE_CNI_IPAM=azure-cns
-ENV AZURE_CNI_MODE=transparent
-
 ENTRYPOINT ["./acn", "cni", "manager", "--follow", "--mode", "transparent"]
