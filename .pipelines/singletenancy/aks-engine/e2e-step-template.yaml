@@ -20,11 +20,11 @@ steps:
       echo Currently set AKS-Engine Version '$(AKS_ENGINE_VERSION)'
       if [ -z '$(AKS_ENGINE_VERSION)' ]
       then
-        echo Found set AKS-Engine version '$(AKS_ENGINE_VERSION)'...
-        export aksEVersion='$(AKS_ENGINE_VERSION)'
-      else
         echo No AKS-Engine version set, using latest...
         export aksEVersion=$(curl -L -s -H 'Accept: application/json' https://github.com/Azure/aks-engine/releases/latest | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
+      else
+        echo Found set AKS-Engine version '$(AKS_ENGINE_VERSION)'...
+        export aksEVersion='$(AKS_ENGINE_VERSION)'
       fi
       echo Using AKS-Engine version $aksEVersion
 

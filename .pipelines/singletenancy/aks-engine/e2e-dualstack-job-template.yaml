@@ -68,15 +68,15 @@ stages:
               # download binary
               #wget https://github.com/Azure/aks-engine/releases/download/$aksEVersion/aks-engine-$aksEVersion-linux-amd64.tar.gz
               wget https://github.com/tamilmani1989/aks-engine/releases/download/v1.1.0/aks-engine-tamanoha-linux-amd64.tar.gz
-              rm -rf ./workspace
-              mkdir ./workspace
+              rm -rf ./dualstack-ws
+              mkdir ./dualstack-ws
 
               #extract binary
-              #tar -zxvf aks-engine-$aksEVersion-linux-amd64.tar.gz -C workspace
-              tar -zxvf aks-engine-tamanoha-linux-amd64.tar.gz -C workspace
-              mv ./workspace/aks-engine-*/* ./workspace/
-              ls -l ./workspace
-              ./workspace/aks-engine version
+              #tar -zxvf aks-engine-$aksEVersion-linux-amd64.tar.gz -C dualstack-ws
+              tar -zxvf aks-engine-tamanoha-linux-amd64.tar.gz -C dualstack-ws
+              mv ./dualstack-ws/aks-engine-*/* ./dualstack-ws/
+              ls -l ./dualstack-ws
+              ./dualstack-ws/aks-engine version
             displayName: "Install aks-engine binary"
 
           - task: AzureCLI@1
@@ -88,12 +88,12 @@ stages:
                 RG=kubernetes-$(echo "dualstack-e2e-`date "+%Y-%m-%d-%S"`")
                 echo "##vso[task.setvariable variable=RESOURCE_GROUP;isOutput=true;]$RG"
                 region=$(echo $(AKS_ENGINE_REGION)|cut -d',' -f1)
-                echo "running: ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $region -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput"
-                ./workspace/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $region  -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./workspace/kubeoutput --auto-suffix
-                mv ./workspace/kubeoutput/kubeconfig/kubeconfig.* ./workspace/kubeoutput/kubeconfig/kubeconfig.json
+                echo "running: ./dualstack-ws/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $region -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./dualstack-ws/kubeoutput"
+                ./dualstack-ws/aks-engine deploy -m $(Pipeline.Workspace)/clusterDefinition.json --location $region  -g $RG --subscription-id $(AKS_ENGINE_SUBSCRIPTION_ID) --client-id $servicePrincipalId --client-secret $servicePrincipalKey --output-directory ./dualstack-ws/kubeoutput --auto-suffix
+                mv ./dualstack-ws/kubeoutput/kubeconfig/kubeconfig.* ./dualstack-ws/kubeoutput/kubeconfig/kubeconfig.json
             name: DeployAKSEngine
             displayName: "Deploy aks-engine cluster"
-          - publish: ./workspace/kubeoutput
+          - publish: ./dualstack-ws/kubeoutput
             artifact: kubeoutput
 
       - job: Build_kubernetes
