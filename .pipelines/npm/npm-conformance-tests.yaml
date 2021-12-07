@@ -197,7 +197,7 @@ jobs:
     artifact: NpmLogs
   - publish: $(System.DefaultWorkingDirectory)/kubeconfig
     condition: always()
-    artifact: kubeconfig
+    artifact: KubeConfig
 
 - job: Clean_up
   displayName: "Cleanup"
